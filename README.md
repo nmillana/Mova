@@ -9,7 +9,9 @@ Repositorio: https://github.com/nmillana/Mova
 ## Abrir
 Haz doble clic en **Abrir Mova.cmd**. Abre http://127.0.0.1:5178/ y usa los archivos compilados de dist. Requiere Node.js (ya disponible en este equipo). No requiere instalar dependencias para abrir esta versión compilada. El servicio escucha solo en este equipo.
 
-La encuesta configura objetivo, experiencia, 10/12/15 minutos, 2/3/4 días por semana, silla, movimientos a evitar, modo cuidadoso para diástasis y narración. Cada ejercicio usa un GIF local del avatar; la app no incrusta ni reproduce vídeos externos. En Microsoft Edge se puede elegir una voz Microsoft disponible.
+La encuesta configura objetivo, experiencia, 10/12/15 minutos, 2/3/4 días por semana, silla, movimientos a evitar, modo cuidadoso para diástasis, entrenador y narración. Elegir a Sabina muestra el avatar femenino y prioriza la voz `es-CL-CatalinaNeural`; elegir a Víctor muestra el avatar masculino y prioriza `es-CL-LorenzoNeural`. Si Edge no expone esas voces, la app elige una voz Microsoft en español y lo informa en pantalla.
+
+La biblioteca tiene 15 ejercicios y 30 GIF originales: una demostración de Sabina y otra de Víctor para cada movimiento. Incluye respiración y abdomen profundo, inclinación pélvica, gato suave, deslizamiento de talón y apertura controlada de rodilla. Las rutinas cambian según objetivo, nivel, restricciones y sesiones completadas.
 
 ## Desarrollo
 - npm install
@@ -32,10 +34,14 @@ Revisión documental de flujos públicos, sin extracción de código propietario
 - https://www.nhs.uk/live-well/exercise/strength-and-flex-exercise-plan-how-to-videos/
 - https://www.royalberkshire.nhs.uk/media/mqjfxwgj/physio-separation-of-the-abdominal-muscles.pdf
 - https://my.clevelandclinic.org/health/diseases/22346-diastasis-recti
+- https://www.northerncarealliance.nhs.uk/patient-information/patient-leaflets/physiotherapy-diastasis-rectus-abdominas-muscle-dram
+- https://www.torbayandsouthdevon.nhs.uk/uploads/25751.pdf
 - https://www.southtees.nhs.uk/resources/combined-press-ups/
+- https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support
 - https://www.youtube.com/watch?v=xEDnlOxeJH4
 
-Los personajes 3D y sus GIF son originales y orientativos. Los GIF están en public/animations; los WebP estáticos en public/characters; los PNG fuente y fotogramas se conservan en artifacts. Los vídeos citados se usaron como referencia técnica y no se reproducen dentro de la app.
-Los ejercicios no sustituyen una evaluación profesional. El modo de diástasis usa activación profunda, inclinación pélvica y basculación suave; excluye planchas, flexiones y movimientos no marcados como compatibles. La selección automática no diagnostica ni prescribe rehabilitación.
+Los personajes 3D y sus GIF son originales y orientativos. Los GIF están en `public/animations`; los WebP estáticos en `public/characters`; los PNG fuente se conservan en `artifacts/coaches`. `scripts/build-coach-assets.py` permite regenerarlos. Los vídeos citados se usaron como referencia técnica y no se reproducen dentro de la app.
+
+Los ejercicios no sustituyen una evaluación profesional. El modo de diástasis usa activación profunda, inclinación pélvica y movimientos lentos; excluye planchas, flexiones y movimientos no marcados como compatibles. La selección automática no diagnostica ni prescribe rehabilitación. Fortalecer el abdomen profundo puede ayudar al control de la pared abdominal, pero la app no promete reducir grasa localizada.
 
 El prototipo inicial BASE se conserva como respaldo en archive/base-v0.html.

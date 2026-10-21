@@ -16,13 +16,16 @@ export const EXERCISES=[
  {id:'core',name:'Respiración y abdomen profundo',area:'Diástasis y core',type:'core',color:'cyan',tags:['floor','back'],diastasisSafe:true,reference:{provider:'Royal Berkshire NHS',url:'https://www.royalberkshire.nhs.uk/media/mqjfxwgj/physio-separation-of-the-abdominal-muscles.pdf'},steps:['Túmbate boca arriba con las rodillas flexionadas y los pies apoyados.','Inhala sin elevar los hombros; al exhalar lleva suavemente el ombligo hacia la columna.','Mantén 2 a 4 segundos respirando con normalidad y relaja por completo.'],tip:'El abdomen debe mantenerse liso, sin formar un cono o bulto central.',easy:'Practícalo sentado con la espalda apoyada si el suelo no te resulta cómodo.',voice:'Inhala suave. Exhala y activa el abdomen profundo sin dejar de respirar.'},
  {id:'tilt',name:'Inclinación pélvica suave',area:'Diástasis y core',type:'tilt',color:'pink',tags:['floor','back'],diastasisSafe:true,reference:{provider:'Royal Berkshire NHS',url:'https://www.royalberkshire.nhs.uk/media/mqjfxwgj/physio-separation-of-the-abdominal-muscles.pdf'},steps:['Túmbate con las rodillas flexionadas, los pies apoyados y la espalda cómoda.','Activa suavemente el abdomen y aplana la curva lumbar contra la superficie.','Haz una inclinación pequeña, mantén 2 a 4 segundos y vuelve a neutral.'],tip:'El movimiento es corto y lento; sigue respirando y evita empujar el abdomen hacia fuera.',easy:'Haz solo la activación abdominal, sin elevar la pelvis.',voice:'Exhala, aplana suavemente la espalda y vuelve a neutral.'},
  {id:'cat',name:'Basculación en cuatro apoyos',area:'Diástasis y core',type:'cat',color:'purple',tags:['floor','wrists','knees','back'],diastasisSafe:true,reference:{provider:'Royal Berkshire NHS',url:'https://www.royalberkshire.nhs.uk/media/mqjfxwgj/physio-separation-of-the-abdominal-muscles.pdf'},steps:['Coloca manos bajo hombros y rodillas bajo caderas sobre una superficie cómoda.','Exhala y redondea suavemente la espalda mientras recoges un poco la pelvis.','Inhala al volver a una espalda neutral; evita hundirla o forzar el recorrido.'],tip:'Observa el abdomen: detente si aparece abombamiento, dolor o presión pélvica.',easy:'Reduce el recorrido o apoya los antebrazos sobre una superficie elevada.',voice:'Exhala y redondea suave. Inhala y vuelve a una espalda neutral.'}
+,
+ {id:'heel-slide',name:'Deslizamiento de talón',area:'Diástasis y core',type:'heel-slide',color:'cyan',tags:['floor','back'],diastasisSafe:true,reference:{provider:'Torbay and South Devon NHS',url:'https://www.torbayandsouthdevon.nhs.uk/uploads/25751.pdf'},steps:['Túmbate boca arriba con rodillas flexionadas, pies apoyados y pelvis nivelada.','Exhala y activa suavemente el abdomen profundo; desliza un talón por el suelo sin arquear la espalda.','Vuelve despacio, relaja y cambia de pierna; detente antes de que aparezca un cono abdominal.'],tip:'El talón nunca se despega del suelo y la pelvis no gira.',easy:'Acorta el deslizamiento y practica una pierna por bloque.',voice:'Exhala y activa suave. Desliza un talón sin mover la pelvis. Vuelve y cambia de lado.'},
+ {id:'knee-fallout',name:'Apertura controlada de rodilla',area:'Diástasis y core',type:'knee-fallout',color:'pink',tags:['floor','back'],diastasisSafe:true,reference:{provider:'Torbay and South Devon NHS',url:'https://www.torbayandsouthdevon.nhs.uk/uploads/25751.pdf'},steps:['Túmbate boca arriba con ambas rodillas flexionadas y los pies apoyados.','Exhala, activa el abdomen profundo y deja que una rodilla se abra lentamente hacia un lado.','Detén el recorrido antes de que la pelvis gire; vuelve al centro y alterna.'],tip:'La otra rodilla permanece apuntando arriba y las caderas siguen niveladas.',easy:'Abre la rodilla solo unos centímetros.',voice:'Exhala y abre una rodilla sin girar la pelvis. Vuelve al centro y alterna.'}
 ];
 export const byId=id=>EXERCISES.find(e=>e.id===id);
-export const defaults={name:'',goal:'habit',level:'new',minutes:12,days:3,equipment:[],avoid:[],diastasis:false,sound:true,voiceURI:''};
-export const GOALS={habit:'Crear el hábito',strength:'Ganar fuerza',energy:'Sentirme con energía',mobility:'Moverme con soltura'};
-export const TITLES={habit:['Un ratito para ti','Pequeños pasos, gran día','Tu pausa de movimiento'],strength:['Fuerza desde lo simple','Tu cuerpo, tu fuerza','Paso a paso más fuerte'],energy:['Enciende tu día','Recarga de energía','Cambia el ritmo'],mobility:['Suelta el día','Muévete con calma','Un poco más de soltura']};
-export const DIASTASIS_SAFE=new Set(['march','core','tilt','cat','chest','back','calf']);
-export function compatible(e,p){return (!p.diastasis||DIASTASIS_SAFE.has(e.id))&&!e.tags.some(t=>p.avoid.includes(t))&&(!e.equipment||p.equipment.includes(e.equipment));}
+export const defaults={name:'',goal:'habit',level:'new',minutes:12,days:3,equipment:[],avoid:[],diastasis:false,sound:true,voiceURI:'',coach:'sabina'};
+export const GOALS={habit:'Crear el hábito',strength:'Ganar fuerza',energy:'Sentirme con energía',mobility:'Moverme con soltura',core:'Mejorar abdomen bajo y diástasis'};
+export const TITLES={habit:['Un ratito para ti','Pequeños pasos, gran día','Tu pausa de movimiento'],strength:['Fuerza desde lo simple','Tu cuerpo, tu fuerza','Paso a paso más fuerte'],energy:['Enciende tu día','Recarga de energía','Cambia el ritmo'],mobility:['Suelta el día','Muévete con calma','Un poco más de soltura'],core:['Abdomen profundo con calma','Control desde el centro','Respira, activa y avanza']};
+export const DIASTASIS_SAFE=new Set(['march','core','tilt','cat','heel-slide','knee-fallout','chest','back','calf']);
+export function compatible(e,p){const guarded=p.diastasis||p.goal==='core';return (!guarded||DIASTASIS_SAFE.has(e.id))&&!e.tags.some(t=>(p.avoid||[]).includes(t))&&(!e.equipment||(p.equipment||[]).includes(e.equipment));}
 export function adaptation(p,sessions){
  let base={new:20,returning:30,active:35}[p.level]||20;
  const recent=sessions.slice(-2);
@@ -32,10 +35,22 @@ export function adaptation(p,sessions){
  return {work:base,mode:'steady',message:'Mantenemos un ritmo estable. Al terminar nos cuentas cómo te fue.'};
 }
 export function buildPlan(profile,sessions=[],energy='normal'){
- const p={...defaults,...profile},ad=adaptation(p,sessions);let work=energy==='low'?Math.max(15,ad.work-5):ad.work;
- if(p.diastasis)work=Math.min(work,20);
- let ids=p.diastasis?['core','tilt','cat']:p.goal==='mobility'?['back','wall','calf','squat','chest','bird']:p.goal==='energy'?['march','squat','wall','wide','bird']:['squat','wall','bird','chair','wide','knee'];
- if(!p.diastasis&&p.level==='new')ids=ids.filter(id=>id!=='knee'&&id!=='wide');
+ const p={...defaults,...profile},ad=adaptation(p,sessions),guarded=p.diastasis||p.goal==='core';let work=energy==='low'?Math.max(15,ad.work-5):ad.work;
+ if(guarded)work=Math.min(work,20);
+ const completed=sessions.filter(s=>s.complete).length;
+ const corePools=[
+  ['core','heel-slide','tilt','knee-fallout'],
+  ['knee-fallout','cat','core','heel-slide'],
+  ['heel-slide','tilt','march','back','core']
+ ];
+ const focusPools={
+  habit:['chair','squat','wall','bird','back'],
+  strength:['squat','chair','wall','bird','wide','knee'],
+  energy:['march','squat','wall','wide','bird'],
+  mobility:['back','wall','calf','squat','chest','bird','cat']
+ };
+ let ids=guarded?corePools[completed%corePools.length]:focusPools[p.goal]||focusPools.habit;
+ if(!guarded&&p.level==='new')ids=ids.filter(id=>id!=='knee'&&id!=='wide');
  let pool=ids.map(byId).filter(e=>compatible(e,p));
  if(pool.length<2)pool=EXERCISES.filter(e=>compatible(e,p)&&e.id!=='knee');
  if(!pool.length)pool=[byId('march')];
@@ -46,7 +61,7 @@ export function buildPlan(profile,sessions=[],energy='normal'){
  const minutes=[10,12,15].includes(Number(p.minutes))?Number(p.minutes):12;
  for(let i=0;i<minutes-3;i++){const e=pool[i%pool.length];stages.push({exercise:e,kind:'work',label:'Movimiento '+(i+1),seconds:work,round:i+1},{exercise:e,kind:'rest',label:'Respira y recupera',seconds:60-work,round:i+1});}
  stages.push({exercise:byId('calf'),kind:'cool',label:'Afloja · cambia de lado a los 15 s',seconds:30},{exercise:cool,kind:'cool',label:'Cierra con calma',seconds:30});
- return {id:crypto.randomUUID(),title:p.diastasis?'Core suave y respiración':TITLES[p.goal][sessions.filter(s=>s.complete).length%3],minutes,work,rest:60-work,stages,pool,adaptation:ad,goal:p.goal};
+ return {id:crypto.randomUUID(),title:TITLES[guarded?'core':p.goal][completed%3],minutes,work,rest:60-work,stages,pool,adaptation:ad,goal:p.goal};
 }
 export function localDay(value=new Date()){const d=new Date(value);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 export function weekDays(now=new Date()){const d=new Date(now);d.setHours(12,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return Array.from({length:7},(_,i)=>{const n=new Date(d);n.setDate(d.getDate()+i);return {date:localDay(n),label:['L','M','M','J','V','S','D'][i],day:n.getDate()};});}
@@ -56,6 +71,6 @@ export function makeRecord(session,feedback){
  return {id:session.id,date:new Date().toISOString(),title:session.plan.title,plannedSeconds:planned,seconds:Math.round(session.done.reduce((s,d)=>s+d.elapsed,0)),work:session.plan.work,complete:session.done.length===session.plan.stages.length&&completed===session.plan.stages.length,skipped:session.done.filter(d=>!d.full).length,exercises:[...new Set(session.done.filter(d=>d.full&&d.kind==='work').map(d=>d.exercise))],...feedback};
 }
 const KEY='mova-personal-v1';
-export function readStore(storage=localStorage){try{const d=JSON.parse(storage.getItem(KEY)||'null');if(!d||d.version!==1)return {profile:null,sessions:[],active:null};return {profile:d.profile&&['habit','strength','energy','mobility'].includes(d.profile.goal)?{...defaults,...d.profile,avoid:Array.isArray(d.profile.avoid)?d.profile.avoid:[],equipment:Array.isArray(d.profile.equipment)?d.profile.equipment:[]}:null,sessions:Array.isArray(d.sessions)?d.sessions.filter(s=>s&&typeof s.id==='string'&&Number.isFinite(s.seconds)&&typeof s.date==='string'):[],active:d.active?.plan?.stages?.length&&Array.isArray(d.active.done)?d.active:null};}catch{return {profile:null,sessions:[],active:null};}}
+export function readStore(storage=localStorage){try{const d=JSON.parse(storage.getItem(KEY)||'null');if(!d||d.version!==1)return {profile:null,sessions:[],active:null};return {profile:d.profile&&['habit','strength','energy','mobility','core'].includes(d.profile.goal)?{...defaults,...d.profile,coach:['sabina','victor'].includes(d.profile.coach)?d.profile.coach:/sabina|catalina/i.test(d.profile.voiceURI||'')?'sabina':/raul|lorenzo/i.test(d.profile.voiceURI||'')?'victor':'sabina',avoid:Array.isArray(d.profile.avoid)?d.profile.avoid:[],equipment:Array.isArray(d.profile.equipment)?d.profile.equipment:[]}:null,sessions:Array.isArray(d.sessions)?d.sessions.filter(s=>s&&typeof s.id==='string'&&Number.isFinite(s.seconds)&&typeof s.date==='string'):[],active:d.active?.plan?.stages?.length&&Array.isArray(d.active.done)?d.active:null};}catch{return {profile:null,sessions:[],active:null};}}
 export function writeStore(state,storage=localStorage){storage.setItem(KEY,JSON.stringify({version:1,...state}));}
 export function time(sec){return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(Math.floor(sec%60)).padStart(2,'0');}
