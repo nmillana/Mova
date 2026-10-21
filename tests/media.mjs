@@ -1,0 +1,16 @@
+import {chromium,expect} from '@playwright/test';
+const browser=await chromium.launch({channel:'msedge',headless:true});
+const page=await browser.newPage({viewport:{width:1100,height:850}});
+const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>m.type()==='error'&&errors.push(m.text()));
+await page.goto('http://127.0.0.1:5178');
+await page.evaluate(()=>localStorage.setItem('mova-personal-v1',JSON.stringify({version:1,profile:{name:'',goal:'habit',level:'new',minutes:12,days:3,equipment:[],avoid:[],diastasis:true,sound:true,voiceURI:''},sessions:[],active:null})));
+await page.reload();await page.getByRole('button',{name:'Ejercicios',exact:true}).click();await page.getByRole('checkbox').uncheck();
+await expect(page.locator('.library-card')).toHaveCount(13);
+await page.getByRole('button',{name:/Respiración y abdomen profundo/}).click();
+await expect(page.locator('.demo-media img')).toHaveAttribute('src',/animations\/core\.gif/);
+await expect(page.locator('iframe')).toHaveCount(0);
+const info=await page.locator('.demo-media img').evaluate(i=>({complete:i.complete,width:i.naturalWidth,height:i.naturalHeight,src:i.getAttribute('src')}));
+await page.screenshot({path:'artifacts/gif-diastasis.png',fullPage:true});
+expect(info.complete).toBe(true);expect(info.width).toBeGreaterThan(0);expect(errors).toEqual([]);
+console.log(JSON.stringify({gif:true,noVideo:true,info,errors}));
+await browser.close();
