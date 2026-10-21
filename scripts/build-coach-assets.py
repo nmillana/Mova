@@ -125,14 +125,14 @@ def clean_cutout(image: Image.Image) -> Image.Image:
     return image
 
 
-def normalize(image: Image.Image, size: int, top_space: int = 12) -> Image.Image:
+def normalize(image: Image.Image, size: int, top_space: int = 12, horizontal_padding: int = 9) -> Image.Image:
     image = clean_cutout(image)
     alpha = image.getchannel("A")
     strong = alpha.point(lambda value: 255 if value >= 36 else 0)
     bounds = strong.getbbox() or alpha.getbbox()
     if bounds:
         image = image.crop(bounds)
-    max_width = size - 18
+    max_width = size - horizontal_padding * 2
     max_height = size - top_space - 12
     ratio = min(max_width / image.width, max_height / image.height)
     image = image.resize(
@@ -156,29 +156,24 @@ def on_motion_background(image: Image.Image) -> Image.Image:
     return background
 
 
-def fade_between(first: Image.Image, second: Image.Image, steps: int = 4) -> list[Image.Image]:
-    """Change pose without overlapping two bodies or creating dark alpha ghosts."""
-    background = Image.new("RGBA", first.size, MOTION_BACKGROUND)
+def pose_sequence(first: Image.Image, second: Image.Image, hold: int = 9) -> list[Image.Image]:
+    """Show two unambiguous key poses without inventing intermediate anatomy."""
     first = on_motion_background(first)
     second = on_motion_background(second)
-    frames = [first.copy(), first.copy(), first.copy()]
-    frames.extend(Image.blend(first, background, ease(index / steps)) for index in range(1, steps + 1))
-    frames.extend(Image.blend(background, second, ease(index / steps)) for index in range(1, steps + 1))
-    frames.extend([second.copy(), second.copy(), second.copy()])
-    return frames
+    return [first.copy() for _ in range(hold)] + [second.copy() for _ in range(hold)]
 
 
-def transition(first: Image.Image, second: Image.Image) -> list[Image.Image]:
-    return fade_between(first, second) + fade_between(second, first)
+def single_pose_sequence(pose: Image.Image, frames: int = 18) -> list[Image.Image]:
+    pose = on_motion_background(pose)
+    return [pose.copy() for _ in range(frames)]
 
 
-def march_transition(action: Image.Image, neutral: Image.Image) -> list[Image.Image]:
-    right = ImageOps.mirror(action)
-    frames: list[Image.Image] = []
-    poses = [action, neutral, right, neutral, action]
-    for start, end in zip(poses, poses[1:]):
-        frames.extend(fade_between(start, end, 3))
-    return frames
+def exercise_frames(exercise: str, start: Image.Image, end: Image.Image) -> list[Image.Image]:
+    if exercise == "march":
+        return pose_sequence(start, ImageOps.mirror(start))
+    if exercise in {"calf", "core"}:
+        return single_pose_sequence(end)
+    return pose_sequence(start, end)
 
 
 def arrow(draw: ImageDraw.ImageDraw, start: tuple[int, int], end: tuple[int, int], color: tuple[int, int, int, int], width: int = 7) -> None:
@@ -192,6 +187,14 @@ def arrow(draw: ImageDraw.ImageDraw, start: tuple[int, int], end: tuple[int, int
         (round(end[0] - length * math.cos(angle + wing)), round(end[1] - length * math.sin(angle + wing))),
     ]
     draw.polygon(points, fill=color)
+
+
+def phase_label(draw: ImageDraw.ImageDraw, message: str) -> None:
+    label_font = font(14)
+    box = draw.textbbox((0, 0), message, font=label_font)
+    label_width = box[2] - box[0] + 24
+    draw.rounded_rectangle(((SIZE - label_width) // 2, SIZE - 39, (SIZE + label_width) // 2, SIZE - 9), radius=14, fill=(255, 255, 255, 238))
+    draw.text((SIZE // 2, SIZE - 24), message, font=label_font, fill=(25, 28, 48, 255), anchor="mm")
 
 
 def add_cue(image: Image.Image, exercise: str, index: int, total: int) -> Image.Image:
@@ -210,8 +213,10 @@ def add_cue(image: Image.Image, exercise: str, index: int, total: int) -> Image.
     cyan = (39, 184, 176, pulse)
 
     if exercise == "march":
-        arrow(draw, (125, 345), (125, 285), orange)
-        arrow(draw, (295, 345), (295, 285), cyan)
+        if index < total / 2:
+            arrow(draw, (292, 350), (292, 282), cyan)
+        else:
+            arrow(draw, (128, 350), (128, 282), orange)
     elif exercise == "calf":
         arrow(draw, (120, 340), (120, 395), orange)
         draw.ellipse((94, 387, 146, 407), outline=(255, 120, 65, pulse), width=6)
@@ -227,20 +232,28 @@ def add_cue(image: Image.Image, exercise: str, index: int, total: int) -> Image.
             arrow(draw, (150, 290), (215, 290), orange)
             arrow(draw, (365, 290), (300, 290), orange)
             phase = "EXHALA · OMBLIGO SUAVE HACIA DENTRO"
-        small = font(14)
-        phase_box = draw.textbbox((0, 0), phase, font=small)
-        phase_width = phase_box[2] - phase_box[0] + 24
-        draw.rounded_rectangle(((SIZE - phase_width) // 2, SIZE - 39, (SIZE + phase_width) // 2, SIZE - 9), radius=14, fill=(255, 255, 255, 235))
-        draw.text((SIZE // 2, SIZE - 24), phase, font=small, fill=(25, 28, 48, 255), anchor="mm")
+        phase_label(draw, phase)
     elif exercise == "tilt":
-        draw.arc((165, 220, 345, 395), start=195, end=335, fill=orange, width=8)
-        arrow(draw, (330, 347), (349, 323), orange)
+        if index < total / 2:
+            draw.line((185, 291, 275, 291), fill=cyan, width=8)
+            phase_label(draw, "PELVIS NEUTRA")
+        else:
+            draw.line((185, 302, 275, 279), fill=orange, width=8)
+            draw.arc((175, 245, 305, 350), start=195, end=335, fill=orange, width=7)
+            arrow(draw, (292, 315), (310, 292), orange)
+            phase_label(draw, "ACERCA LA CINTURA AL SUELO")
     elif exercise == "heel-slide":
         arrow(draw, (235, 370), (360, 370), cyan)
         arrow(draw, (360, 392), (235, 392), orange)
+        phase_label(draw, "FLEXIONA" if index < total / 2 else "DESLIZA SIN ARQUEAR")
     elif exercise == "knee-fallout":
-        draw.arc((220, 210, 382, 390), start=250, end=350, fill=cyan, width=8)
-        arrow(draw, (367, 330), (379, 359), cyan)
+        if index < total / 2:
+            draw.line((300, 220, 300, 350), fill=orange, width=5)
+            phase_label(draw, "RODILLA AL CENTRO")
+        else:
+            draw.arc((220, 210, 382, 390), start=250, end=350, fill=cyan, width=8)
+            arrow(draw, (367, 330), (379, 359), cyan)
+            phase_label(draw, "ABRE SIN GIRAR LA PELVIS")
     return result
 
 
@@ -298,14 +311,12 @@ def build_sabina() -> None:
     for filename, (rows, exercises) in SABINA_SHEETS.items():
         pairs.update(extract_sheet(filename, rows, exercises))
 
-    action_march = normalize(pairs["march"][0], SIZE, 52)
-    neutral_march = normalize(pairs["squat"][0], SIZE, 52)
-
     for exercise in EXERCISES:
         start_raw, end_raw = pairs[exercise]
-        start = normalize(start_raw, SIZE, 52)
-        end = normalize(end_raw, SIZE, 52)
-        frames = march_transition(action_march, neutral_march) if exercise == "march" else transition(start, end)
+        padding = 38 if exercise in {"core", "tilt", "heel-slide", "knee-fallout"} else 16
+        start = normalize(start_raw, SIZE, 52, padding)
+        end = normalize(end_raw, SIZE, 52, padding)
+        frames = exercise_frames(exercise, start, end)
         save_gif(frames, ANIMATIONS / "sabina" / f"{exercise}.gif", exercise)
         static = normalize(end_raw if exercise != "march" else start_raw, STATIC_SIZE, 12)
         save_static(static, CHARACTERS / "sabina" / f"{exercise}.webp")
@@ -329,23 +340,20 @@ def build_victor() -> None:
 
     filename, rows, exercises = VICTOR_SHEET
     overrides = extract_sheet(filename, rows, exercises)
-    march_action = normalize(overrides["march"][0], SIZE, 52)
-    neutral_raw = Image.open(source_characters / "chest.webp").convert("RGBA")
-    march_neutral = normalize(neutral_raw, SIZE, 52)
-
     for exercise in EXERCISES:
         if exercise in overrides:
             start_raw, end_raw = overrides[exercise]
-            start = normalize(start_raw, SIZE, 52)
-            end = normalize(end_raw, SIZE, 52)
-            frames = march_transition(march_action, march_neutral) if exercise == "march" else transition(start, end)
+            padding = 38 if exercise in {"core", "tilt", "heel-slide", "knee-fallout"} else 16
+            start = normalize(start_raw, SIZE, 52, padding)
+            end = normalize(end_raw, SIZE, 52, padding)
+            frames = exercise_frames(exercise, start, end)
             static_raw = end_raw if exercise != "march" else start_raw
             save_static(normalize(static_raw, STATIC_SIZE, 12), destination_characters / f"{exercise}.webp")
         else:
             first_raw, second_raw = load_existing_gif(source_animations / f"{exercise}.gif")
             first = normalize(first_raw, SIZE, 52)
             second = normalize(second_raw, SIZE, 52)
-            frames = transition(first, second)
+            frames = pose_sequence(first, second)
             shutil.copy2(source_characters / f"{exercise}.webp", destination_characters / f"{exercise}.webp")
         save_gif(frames, destination_animations / f"{exercise}.gif", exercise)
 

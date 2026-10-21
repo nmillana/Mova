@@ -41,6 +41,8 @@
 .voice-preview{min-height:42px;padding:10px 15px;flex-shrink:0}
 .voice-status{font-size:10px;line-height:1.5;color:var(--muted)}
 .voice-status.available{color:#24796f}
+.profile-sound{margin-top:18px}
+.profile-editor-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:28px}
 .coach-avatar{overflow:hidden;padding:0;background:#FF8C4216}
 .coach-avatar img{width:47px;max-width:none;transform:translate(-6px,5px)}
 .demo-media .exercise-art{max-height:480px;object-fit:contain}
@@ -51,6 +53,8 @@
  .coach-preview{width:80px;height:94px}
  .coach-preview img{width:88px}
  .voice-row{align-items:flex-start;flex-direction:column}
+ .profile-editor-actions{align-items:stretch;flex-direction:column-reverse}
+ .profile-editor-actions .button{width:100%}
  .hero-card{grid-template-columns:minmax(0,1fr) 42%}
  .hero-card .hero-art{width:135%;margin-left:-24%}
  .hero-person{inset:5% 0 3% 4%}

@@ -13,6 +13,8 @@ La encuesta configura objetivo, experiencia, 10/12/15 minutos, 2/3/4 días por s
 
 La biblioteca tiene 15 ejercicios y 30 GIF originales: una demostración de Sabina y otra de Víctor para cada movimiento. Incluye respiración y abdomen profundo, inclinación pélvica, gato suave, deslizamiento de talón y apertura controlada de rodilla. Las rutinas cambian según objetivo, nivel, restricciones y sesiones completadas.
 
+El botón **Perfil** en móvil y la tarjeta de usuario en escritorio permiten cambiar nombre, avatar, narración y voz directamente. Desde ese mismo editor se puede abrir la encuesta completa para modificar objetivo, tiempo o cuidados.
+
 ## Desarrollo
 - npm install
 - npm run dev
