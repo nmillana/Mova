@@ -28,6 +28,8 @@ await page.clock.runFor(4000);await expect(page.getByRole('timer')).toHaveAttrib
 await page.getByRole('button',{name:'Ver movimiento completo'}).click();
 await expect(page.locator('.demo-media img')).toHaveAttribute('src',/animations\/sabina\/march\.gif/);
 await expect(page.locator('iframe')).toHaveCount(0);
+await expect.poll(()=>page.locator('.demo-media img').evaluate(i=>i.complete&&i.naturalWidth>0)).toBe(true);
+await page.screenshot({path:'artifacts/demo-marcha-movil.png',fullPage:true});
 await page.getByRole('button',{name:'Cerrar',exact:true}).click();
 await page.getByRole('button',{name:'Salir',exact:true}).click();
 await page.getByRole('button',{name:'Pausar y volver al inicio'}).click();
@@ -55,5 +57,5 @@ await page2.getByRole('button',{name:'5',exact:true}).click();await page2.getByR
 const skipped=await page2.evaluate(()=>JSON.parse(localStorage.getItem('mova-personal-v1')).sessions.at(-1));
 expect(skipped.complete).toBe(false);expect(skipped.seconds).toBe(0);
 expect(errors).toEqual([]);
-console.log(JSON.stringify({onboarding:true,mobileNoOverflow:true,pause:true,resume:true,gifDemo:true,completedSeconds:record.seconds,skippedSeconds:skipped.seconds,consoleErrors:errors,screenshots:4}));
+console.log(JSON.stringify({onboarding:true,mobileNoOverflow:true,pause:true,resume:true,gifDemo:true,completedSeconds:record.seconds,skippedSeconds:skipped.seconds,consoleErrors:errors,screenshots:5}));
 await browser.close();

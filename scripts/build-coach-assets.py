@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import shutil
+from collections import deque
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageSequence
@@ -13,6 +14,7 @@ ANIMATIONS = PUBLIC / "animations"
 CHARACTERS = PUBLIC / "characters"
 SIZE = 420
 STATIC_SIZE = 520
+MOTION_BACKGROUND = (248, 244, 250, 255)
 
 EXERCISES = [
     "march", "squat", "wide", "chair", "wall", "bird", "knee",
@@ -34,8 +36,8 @@ VICTOR_SHEET = (
 )
 
 SHEET_BANDS = {
-    "sabina-dynamic-sheet.png": [(0, 375), (420, 760), (810, 1145), (1210, 1536)],
-    "sabina-upper-sheet.png": [(0, 380), (420, 760), (810, 1145), (1210, 1536)],
+    "sabina-dynamic-sheet.png": [(0, 375), (420, 760), (795, 1145), (1185, 1536)],
+    "sabina-upper-sheet.png": [(0, 360), (370, 760), (770, 1145), (1150, 1536)],
     "sabina-floor-sheet.png": [(0, 300), (320, 600), (620, 805), (825, 1024)],
     "sabina-diastasis-sheet.png": [(0, 410), (440, 690), (710, 1024)],
     "victor-key-motions-sheet.png": [
@@ -53,8 +55,8 @@ CUES = {
 }
 
 FONT_PATHS = [
-    Path(r"C:WindowsFontsseguisb.ttf"),
-    Path(r"C:WindowsFontsarialbd.ttf"),
+    Path(r"C:\Windows\Fonts\seguisb.ttf"),
+    Path(r"C:\Windows\Fonts\arialbd.ttf"),
 ]
 
 
@@ -76,8 +78,55 @@ def crop_cell(sheet: Image.Image, row: int, rows: int, column: int, top_trim: fl
     return sheet.crop((x0, y0, x1, y1)).convert("RGBA")
 
 
-def normalize(image: Image.Image, size: int, top_space: int = 12) -> Image.Image:
+def clean_cutout(image: Image.Image) -> Image.Image:
+    """Remove generated glow and disconnected scraps before resizing a pose."""
     image = image.convert("RGBA")
+    alpha = image.getchannel("A").point(
+        lambda value: 0 if value < 78 else 255 if value > 218 else round((value - 78) * 255 / 140)
+    )
+    width, height = image.size
+    mask = alpha.point(lambda value: 255 if value >= 28 else 0)
+    pixels = mask.load()
+    visited = bytearray(width * height)
+    remove_boxes: list[tuple[int, int, int, int]] = []
+    minimum_area = max(700, width * height // 240)
+
+    for y in range(height):
+        for x in range(width):
+            index = y * width + x
+            if visited[index] or not pixels[x, y]:
+                continue
+            queue = deque([(x, y)])
+            visited[index] = 1
+            count = 0
+            left = right = x
+            top = bottom = y
+            while queue:
+                current_x, current_y = queue.popleft()
+                count += 1
+                left = min(left, current_x)
+                right = max(right, current_x)
+                top = min(top, current_y)
+                bottom = max(bottom, current_y)
+                for next_x, next_y in ((current_x - 1, current_y), (current_x + 1, current_y), (current_x, current_y - 1), (current_x, current_y + 1)):
+                    if 0 <= next_x < width and 0 <= next_y < height:
+                        next_index = next_y * width + next_x
+                        if not visited[next_index] and pixels[next_x, next_y]:
+                            visited[next_index] = 1
+                            queue.append((next_x, next_y))
+            if count < minimum_area:
+                remove_boxes.append((max(0, left - 3), max(0, top - 3), min(width, right + 4), min(height, bottom + 4)))
+
+    if remove_boxes:
+        draw = ImageDraw.Draw(alpha)
+        for box in remove_boxes:
+            draw.rectangle(box, fill=0)
+    image.putalpha(alpha)
+    return image
+
+
+def normalize(image: Image.Image, size: int, top_space: int = 12) -> Image.Image:
+    image = clean_cutout(image)
     alpha = image.getchannel("A")
     strong = alpha.point(lambda value: 255 if value >= 36 else 0)
     bounds = strong.getbbox() or alpha.getbbox()
@@ -101,13 +150,26 @@ def ease(value: float) -> float:
     return (1 - math.cos(math.pi * value)) / 2
 
 
-def transition(first: Image.Image, second: Image.Image, steps: int = 7) -> list[Image.Image]:
-    forward = [first.copy(), first.copy()]
-    for index in range(1, steps):
-        forward.append(Image.blend(first, second, ease(index / steps)))
-    forward.extend([second.copy(), second.copy(), second.copy()])
-    backward = [Image.blend(second, first, ease(index / steps)) for index in range(1, steps)]
-    return forward + backward + [first.copy()]
+def on_motion_background(image: Image.Image) -> Image.Image:
+    background = Image.new("RGBA", image.size, MOTION_BACKGROUND)
+    background.alpha_composite(image)
+    return background
+
+
+def fade_between(first: Image.Image, second: Image.Image, steps: int = 4) -> list[Image.Image]:
+    """Change pose without overlapping two bodies or creating dark alpha ghosts."""
+    background = Image.new("RGBA", first.size, MOTION_BACKGROUND)
+    first = on_motion_background(first)
+    second = on_motion_background(second)
+    frames = [first.copy(), first.copy(), first.copy()]
+    frames.extend(Image.blend(first, background, ease(index / steps)) for index in range(1, steps + 1))
+    frames.extend(Image.blend(background, second, ease(index / steps)) for index in range(1, steps + 1))
+    frames.extend([second.copy(), second.copy(), second.copy()])
+    return frames
+
+
+def transition(first: Image.Image, second: Image.Image) -> list[Image.Image]:
+    return fade_between(first, second) + fade_between(second, first)
 
 
 def march_transition(action: Image.Image, neutral: Image.Image) -> list[Image.Image]:
@@ -115,9 +177,7 @@ def march_transition(action: Image.Image, neutral: Image.Image) -> list[Image.Im
     frames: list[Image.Image] = []
     poses = [action, neutral, right, neutral, action]
     for start, end in zip(poses, poses[1:]):
-        for index in range(4):
-            frames.append(Image.blend(start, end, ease(index / 4)))
-    frames.extend([action.copy(), action.copy()])
+        frames.extend(fade_between(start, end, 3))
     return frames
 
 
@@ -185,12 +245,11 @@ def add_cue(image: Image.Image, exercise: str, index: int, total: int) -> Image.
 
 
 def gif_palette(image: Image.Image) -> Image.Image:
-    alpha = image.getchannel("A")
-    palette = image.convert("RGB").quantize(colors=255, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.FLOYDSTEINBERG)
-    transparent = alpha.point(lambda value: 255 if value <= 12 else 0)
-    palette.paste(255, mask=transparent)
-    palette.info["transparency"] = 255
-    return palette
+    return on_motion_background(image).convert("RGB").quantize(
+        colors=256,
+        method=Image.Quantize.MEDIANCUT,
+        dither=Image.Dither.FLOYDSTEINBERG,
+    )
 
 
 def save_gif(frames: list[Image.Image], path: Path, exercise: str) -> None:
@@ -203,8 +262,7 @@ def save_gif(frames: list[Image.Image], path: Path, exercise: str) -> None:
         append_images=paletted[1:],
         duration=105,
         loop=0,
-        disposal=2,
-        transparency=255,
+        disposal=1,
         optimize=True,
     )
 

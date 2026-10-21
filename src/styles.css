@@ -18,7 +18,7 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 /* Personaje 3D generado para las demostraciones de Mova */
-.character-cutout{object-fit:contain;object-position:center;filter:drop-shadow(0 10px 16px #1a1a2e14)}
+.character-cutout{object-fit:contain;object-position:center}
 .hero-person{inset:3% 4% 2% 15%;width:auto;display:flex;align-items:flex-end;justify-content:center}
 .hero-person .character-cutout{width:100%;height:100%;object-position:center bottom}
 .mini-art .character-cutout{height:63px;padding:3px}
@@ -51,4 +51,8 @@
  .coach-preview{width:80px;height:94px}
  .coach-preview img{width:88px}
  .voice-row{align-items:flex-start;flex-direction:column}
+ .hero-card{grid-template-columns:minmax(0,1fr) 42%}
+ .hero-card .hero-art{width:135%;margin-left:-24%}
+ .hero-person{inset:5% 0 3% 4%}
+ .welcome .hero-art{width:100%;margin:8px auto 0}
 }

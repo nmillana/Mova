@@ -9,6 +9,7 @@ await expect(page.locator('.library-card')).toHaveCount(15);
 await page.getByRole('button',{name:/Respiración y abdomen profundo/}).click();
 await expect(page.locator('.demo-media img')).toHaveAttribute('src',/animations\/sabina\/core\.gif/);
 await expect(page.locator('iframe')).toHaveCount(0);
+await expect.poll(()=>page.locator('.demo-media img').evaluate(i=>i.complete&&i.naturalWidth>0)).toBe(true);
 const info=await page.locator('.demo-media img').evaluate(i=>({complete:i.complete,width:i.naturalWidth,height:i.naturalHeight,src:i.getAttribute('src')}));
 await page.screenshot({path:'artifacts/gif-diastasis.png',fullPage:true});
 expect(info.complete).toBe(true);expect(info.width).toBeGreaterThan(0);expect(errors).toEqual([]);
