@@ -19,7 +19,8 @@ MOTION_BACKGROUND = (248, 244, 250, 255)
 EXERCISES = [
     "march", "squat", "wide", "chair", "wall", "bird", "knee",
     "chest", "back", "calf", "core", "tilt", "cat", "heel-slide",
-    "knee-fallout",
+    "knee-fallout", "supine-march", "dead-bug", "glute-bridge",
+    "step-up", "calf-raise", "side-plank-knees",
 ]
 
 SABINA_SHEETS = {
@@ -45,6 +46,41 @@ SHEET_BANDS = {
     ],
 }
 
+
+MULTIFRAME_COMBINED = {
+    "heel-slide": "heel-slide-4frames.png",
+    "supine-march": "supine-march-4frames.png",
+    "dead-bug": "dead-bug-4frames.png",
+    "glute-bridge": "glute-bridge-4frames.png",
+    "bird": "bird-dog-4frames.png",
+    "wall": "wall-pushup-4frames.png",
+    "squat": "squat-4frames.png",
+    "step-up": "step-up-4frames.png",
+    "calf-raise": "calf-raise-4frames.png",
+    "side-plank-knees": "side-plank-knees-4frames.png",
+}
+
+MULTIFRAME_SEPARATE = {
+    "core": {
+        "sabina": "sabina-breathing-4frames.png",
+        "victor": "victor-breathing-4frames.png",
+    },
+}
+
+PHASES = {
+    "core": ["PREPARA", "INHALA 360°", "EXHALA", "ACTIVA SUAVE"],
+    "heel-slide": ["PREPARA", "DESLIZA", "EXTIENDE", "REGRESA"],
+    "supine-march": ["PIES APOYADOS", "ELEVA UN PIE", "ALTERNA", "REGRESA"],
+    "dead-bug": ["PREPARA", "BAJA EL TALÓN", "EXTIENDE EL BRAZO", "REGRESA"],
+    "glute-bridge": ["PREPARA", "INICIA", "ELEVA LA PELVIS", "BAJA SUAVE"],
+    "bird": ["CUATRO APOYOS", "EXTIENDE", "MANTÉN NIVEL", "REGRESA"],
+    "wall": ["PREPARA", "ACÉRCATE", "FLEXIONA", "EMPUJA"],
+    "squat": ["DE PIE", "CADERA ATRÁS", "BAJA CON CONTROL", "SUBE"],
+    "step-up": ["PREPARA", "APOYA EL PIE", "SUBE", "BAJA CON CONTROL"],
+    "calf-raise": ["TALONES ABAJO", "SUBE", "PUNTAS DE PIE", "BAJA LENTO"],
+    "side-plank-knees": ["APOYA", "ELEVA", "ALINEA", "BAJA SUAVE"],
+}
+
 CUES = {
     "march": "ALTERNA LAS RODILLAS",
     "calf": "TALÓN TRASERO ABAJO",
@@ -52,6 +88,15 @@ CUES = {
     "tilt": "BASCULA LA PELVIS",
     "heel-slide": "DESLIZA EL TALÓN",
     "knee-fallout": "ABRE SIN GIRAR LA PELVIS",
+    "supine-march": "MARCHA SIN ARQUEAR",
+    "dead-bug": "MUEVE UNA EXTREMIDAD",
+    "glute-bridge": "ELEVA CON GLÚTEOS",
+    "bird": "PELVIS ESTABLE",
+    "wall": "CUERPO ALINEADO",
+    "squat": "RODILLAS HACIA LOS PIES",
+    "step-up": "TODA LA PLANTA APOYADA",
+    "calf-raise": "SUBE Y BAJA CON CONTROL",
+    "side-plank-knees": "HOMBRO · CADERA · RODILLA",
 }
 
 FONT_PATHS = [
@@ -208,6 +253,9 @@ def add_cue(image: Image.Image, exercise: str, index: int, total: int) -> Image.
     width = box[2] - box[0] + 28
     draw.rounded_rectangle(((SIZE - width) // 2, 8, (SIZE + width) // 2, 41), radius=16, fill=(255, 255, 255, 235))
     draw.text((SIZE // 2, 24), label, font=label_font, fill=(25, 28, 48, 255), anchor="mm")
+    if exercise in PHASES:
+        phase_index = min(3, index * 4 // total)
+        phase_label(draw, PHASES[exercise][phase_index])
     pulse = 150 + round(90 * (0.5 + 0.5 * math.sin(index / total * math.tau)))
     orange = (255, 120, 65, pulse)
     cyan = (39, 184, 176, pulse)
@@ -255,6 +303,42 @@ def add_cue(image: Image.Image, exercise: str, index: int, total: int) -> Image.
             arrow(draw, (367, 330), (379, 359), cyan)
             phase_label(draw, "ABRE SIN GIRAR LA PELVIS")
     return result
+
+
+def grid_cell(sheet: Image.Image, row: int, rows: int, column: int, columns: int) -> Image.Image:
+    width, height = sheet.size
+    x0 = round(column * width / columns) + 3
+    x1 = round((column + 1) * width / columns) - 3
+    y0 = round(row * height / rows) + 3
+    y1 = round((row + 1) * height / rows) - 3
+    return sheet.crop((x0, y0, x1, y1)).convert("RGBA")
+
+
+def fit_grid_frame(image: Image.Image, size: int = SIZE) -> Image.Image:
+    image = image.convert("RGBA")
+    max_width, max_height = size - 16, size - 58
+    ratio = min(max_width / image.width, max_height / image.height)
+    resized = image.resize((round(image.width * ratio), round(image.height * ratio)), Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (size, size), MOTION_BACKGROUND)
+    canvas.alpha_composite(resized, ((size - resized.width) // 2, 44 + (max_height - resized.height) // 2))
+    return canvas
+
+
+def multiframe_raw(exercise: str, coach: str) -> list[Image.Image] | None:
+    if exercise in MULTIFRAME_SEPARATE:
+        sheet = Image.open(SOURCE / MULTIFRAME_SEPARATE[exercise][coach]).convert("RGBA")
+        return [grid_cell(sheet, row, 2, column, 2) for row in range(2) for column in range(2)]
+    filename = MULTIFRAME_COMBINED.get(exercise)
+    if not filename:
+        return None
+    sheet = Image.open(SOURCE / filename).convert("RGBA")
+    row = 0 if coach == "sabina" else 1
+    return [grid_cell(sheet, row, 2, column, 4) for column in range(4)]
+
+
+def multiframe_sequence(raw_frames: list[Image.Image], hold: int = 5) -> list[Image.Image]:
+    frames = [fit_grid_frame(frame) for frame in raw_frames]
+    return [frame.copy() for frame in frames for _ in range(hold)]
 
 
 def gif_palette(image: Image.Image) -> Image.Image:
@@ -312,6 +396,12 @@ def build_sabina() -> None:
         pairs.update(extract_sheet(filename, rows, exercises))
 
     for exercise in EXERCISES:
+        raw_frames = multiframe_raw(exercise, "sabina")
+        if raw_frames:
+            frames = multiframe_sequence(raw_frames)
+            save_gif(frames, ANIMATIONS / "sabina" / f"{exercise}.gif", exercise)
+            save_static(fit_grid_frame(raw_frames[2], STATIC_SIZE), CHARACTERS / "sabina" / f"{exercise}.webp")
+            continue
         start_raw, end_raw = pairs[exercise]
         padding = 38 if exercise in {"core", "tilt", "heel-slide", "knee-fallout"} else 16
         start = normalize(start_raw, SIZE, 52, padding)
@@ -341,6 +431,12 @@ def build_victor() -> None:
     filename, rows, exercises = VICTOR_SHEET
     overrides = extract_sheet(filename, rows, exercises)
     for exercise in EXERCISES:
+        raw_frames = multiframe_raw(exercise, "victor")
+        if raw_frames:
+            frames = multiframe_sequence(raw_frames)
+            save_static(fit_grid_frame(raw_frames[2], STATIC_SIZE), destination_characters / f"{exercise}.webp")
+            save_gif(frames, destination_animations / f"{exercise}.gif", exercise)
+            continue
         if exercise in overrides:
             start_raw, end_raw = overrides[exercise]
             padding = 38 if exercise in {"core", "tilt", "heel-slide", "knee-fallout"} else 16

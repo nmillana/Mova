@@ -18,14 +18,20 @@ export const EXERCISES=[
  {id:'cat',name:'Basculación en cuatro apoyos',area:'Diástasis y core',type:'cat',color:'purple',tags:['floor','wrists','knees','back'],diastasisSafe:true,reference:{provider:'Royal Berkshire NHS',url:'https://www.royalberkshire.nhs.uk/media/mqjfxwgj/physio-separation-of-the-abdominal-muscles.pdf'},steps:['Coloca manos bajo hombros y rodillas bajo caderas sobre una superficie cómoda.','Exhala y redondea suavemente la espalda mientras recoges un poco la pelvis.','Inhala al volver a una espalda neutral; evita hundirla o forzar el recorrido.'],tip:'Observa el abdomen: detente si aparece abombamiento, dolor o presión pélvica.',easy:'Reduce el recorrido o apoya los antebrazos sobre una superficie elevada.',voice:'Exhala y redondea suave. Inhala y vuelve a una espalda neutral.'}
 ,
  {id:'heel-slide',name:'Deslizamiento de talón',area:'Diástasis y core',type:'heel-slide',color:'cyan',tags:['floor','back'],diastasisSafe:true,reference:{provider:'Torbay and South Devon NHS',url:'https://www.torbayandsouthdevon.nhs.uk/uploads/25751.pdf'},steps:['Túmbate boca arriba con rodillas flexionadas, pies apoyados y pelvis nivelada.','Exhala y activa suavemente el abdomen profundo; desliza un talón por el suelo sin arquear la espalda.','Vuelve despacio, relaja y cambia de pierna; detente antes de que aparezca un cono abdominal.'],tip:'El talón nunca se despega del suelo y la pelvis no gira.',easy:'Acorta el deslizamiento y practica una pierna por bloque.',voice:'Exhala y activa suave. Desliza un talón sin mover la pelvis. Vuelve y cambia de lado.'},
+ {id:'supine-march',name:'Marcha supina',area:'Diástasis y core',type:'supine-march',color:'orange',tags:['floor','back'],diastasisSafe:true,steps:['Túmbate boca arriba con rodillas flexionadas, pies apoyados y pelvis estable.','Exhala y despega un pie solo unos centímetros, sin arquear la espalda.','Apóyalo con control y alterna; reduce la altura si el abdomen se abomba.'],tip:'La pelvis permanece quieta y el movimiento sale de la cadera.',easy:'Despega solo el talón y conserva la punta del pie en el suelo.',voice:'Exhala, eleva un pie sin mover la pelvis. Apoya suave y alterna.'},
+ {id:'dead-bug',name:'Dead bug modificado',area:'Diástasis y core',type:'dead-bug',color:'purple',tags:['floor','back','shoulders'],diastasisSafe:true,progression:true,steps:['Túmbate boca arriba y lleva las piernas a una posición cómoda de mesa.','Exhala y baja un talón o extiende un brazo; mueve una sola extremidad por vez.','Regresa antes de perder la postura y alterna sin contener el aire.'],tip:'Usa un recorrido pequeño y detente si aparece un cono en el abdomen.',easy:'Mantén ambos pies apoyados y mueve únicamente un brazo.',voice:'Exhala. Mueve una sola extremidad sin arquear la espalda. Regresa y alterna.'},
+ {id:'glute-bridge',name:'Puente de glúteos',area:'Diástasis y core',type:'glute-bridge',color:'pink',tags:['floor','back','knees'],diastasisSafe:true,steps:['Túmbate con rodillas flexionadas y pies apoyados al ancho de caderas.','Exhala, activa suave y empuja el suelo con los talones para elevar la pelvis.','Aprieta los glúteos arriba sin arquear la espalda y baja vértebra a vértebra.'],tip:'Costillas y pelvis permanecen alineadas; la fuerza sale de los glúteos.',easy:'Eleva la pelvis solo hasta donde mantengas el abdomen liso.',voice:'Exhala y eleva la pelvis con los glúteos. Pausa y baja despacio.'},
+ {id:'step-up',name:'Subida a escalón bajo',area:'Piernas',type:'step-up',color:'orange',tags:['knees'],steps:['Usa un escalón bajo, firme y despejado; acerca todo el pie al borde.','Apoya la planta completa y empuja el escalón para subir con el tronco alto.','Junta los pies arriba y desciende con control; alterna la pierna inicial.'],tip:'La rodilla sigue la dirección del pie y el escalón no debe moverse.',easy:'Usa menos altura y una pared cercana solo para equilibrio.'},
+ {id:'calf-raise',name:'Elevación de talones',area:'Piernas',type:'calf-raise',color:'cyan',tags:[],steps:['Ponte de pie con los pies paralelos y el peso repartido.','Eleva ambos talones lentamente hasta quedar sobre la parte delantera del pie.','Haz una pausa breve y baja con control hasta apoyar por completo.'],tip:'Mantén el cuerpo vertical; apóyate suavemente en una pared si lo necesitas.',easy:'Reduce la altura o haz el movimiento sentado.'},
+ {id:'side-plank-knees',name:'Plancha lateral con rodillas',area:'Diástasis y core',type:'side-plank-knees',color:'purple',tags:['floor','shoulders','knees'],diastasisSafe:true,progression:true,steps:['Colócate de lado con rodillas flexionadas y el antebrazo justo bajo el hombro.','Exhala y eleva la pelvis hasta alinear hombro, cadera y rodillas.','Mantén respirando de 15 a 20 segundos y baja con control; cambia de lado.'],tip:'Úsala solo si controlas la presión abdominal sin cono, dolor ni pesadez.',easy:'Haz una elevación corta de pelvis y baja de inmediato.',voice:'Exhala y eleva la pelvis. Mantén una línea del hombro a las rodillas y sigue respirando.'},
  {id:'knee-fallout',name:'Apertura controlada de rodilla',area:'Diástasis y core',type:'knee-fallout',color:'pink',tags:['floor','back'],diastasisSafe:true,reference:{provider:'Torbay and South Devon NHS',url:'https://www.torbayandsouthdevon.nhs.uk/uploads/25751.pdf'},steps:['Túmbate boca arriba con ambas rodillas flexionadas y los pies apoyados.','Exhala, activa el abdomen profundo y deja que una rodilla se abra lentamente hacia un lado.','Detén el recorrido antes de que la pelvis gire; vuelve al centro y alterna.'],tip:'La otra rodilla permanece apuntando arriba y las caderas siguen niveladas.',easy:'Abre la rodilla solo unos centímetros.',voice:'Exhala y abre una rodilla sin girar la pelvis. Vuelve al centro y alterna.'}
 ];
 export const byId=id=>EXERCISES.find(e=>e.id===id);
 export const defaults={name:'',goal:'habit',level:'new',minutes:12,days:3,equipment:[],avoid:[],diastasis:false,sound:true,voiceURI:'',coach:'sabina'};
 export const GOALS={habit:'Crear el hábito',strength:'Ganar fuerza',energy:'Sentirme con energía',mobility:'Moverme con soltura',core:'Mejorar abdomen bajo y diástasis'};
 export const TITLES={habit:['Un ratito para ti','Pequeños pasos, gran día','Tu pausa de movimiento'],strength:['Fuerza desde lo simple','Tu cuerpo, tu fuerza','Paso a paso más fuerte'],energy:['Enciende tu día','Recarga de energía','Cambia el ritmo'],mobility:['Suelta el día','Muévete con calma','Un poco más de soltura'],core:['Abdomen profundo con calma','Control desde el centro','Respira, activa y avanza']};
-export const DIASTASIS_SAFE=new Set(['march','core','tilt','cat','heel-slide','knee-fallout','chest','back','calf']);
-export function compatible(e,p){const guarded=p.diastasis||p.goal==='core';return (!guarded||DIASTASIS_SAFE.has(e.id))&&!e.tags.some(t=>(p.avoid||[]).includes(t))&&(!e.equipment||(p.equipment||[]).includes(e.equipment));}
+export const DIASTASIS_SAFE=new Set(['march','core','tilt','cat','heel-slide','knee-fallout','supine-march','dead-bug','glute-bridge','bird','side-plank-knees','chest','back','calf','calf-raise']);
+export function compatible(e,p){const guarded=p.diastasis||p.goal==='core';return (!guarded||DIASTASIS_SAFE.has(e.id))&&(!guarded||!e.progression||p.level==='active')&&!e.tags.some(t=>(p.avoid||[]).includes(t))&&(!e.equipment||(p.equipment||[]).includes(e.equipment));}
 export function adaptation(p,sessions){
  let base={new:20,returning:30,active:35}[p.level]||20;
  const recent=sessions.slice(-2);
@@ -38,16 +44,20 @@ export function buildPlan(profile,sessions=[],energy='normal'){
  const p={...defaults,...profile},ad=adaptation(p,sessions),guarded=p.diastasis||p.goal==='core';let work=energy==='low'?Math.max(15,ad.work-5):ad.work;
  if(guarded)work=Math.min(work,20);
  const completed=sessions.filter(s=>s.complete).length;
- const corePools=[
-  ['core','heel-slide','tilt','knee-fallout'],
-  ['knee-fallout','cat','core','heel-slide'],
-  ['heel-slide','tilt','march','back','core']
+ const corePools=p.level==='active'?[
+  ['core','heel-slide','supine-march','dead-bug'],
+  ['glute-bridge','bird','core','knee-fallout'],
+  ['heel-slide','side-plank-knees','tilt','supine-march']
+ ]:[
+  ['core','heel-slide','tilt','supine-march'],
+  ['knee-fallout','glute-bridge','core','heel-slide'],
+  ['supine-march','tilt','march','core']
  ];
  const focusPools={
-  habit:['chair','squat','wall','bird','back'],
-  strength:['squat','chair','wall','bird','wide','knee'],
-  energy:['march','squat','wall','wide','bird'],
-  mobility:['back','wall','calf','squat','chest','bird','cat']
+  habit:['chair','squat','wall','step-up','back','calf-raise'],
+  strength:['squat','step-up','wall','bird','glute-bridge','calf-raise','wide','knee'],
+  energy:['march','squat','step-up','wall','calf-raise','bird'],
+  mobility:['back','wall','calf','calf-raise','squat','chest','bird','cat']
  };
  let ids=guarded?corePools[completed%corePools.length]:focusPools[p.goal]||focusPools.habit;
  if(!guarded&&p.level==='new')ids=ids.filter(id=>id!=='knee'&&id!=='wide');

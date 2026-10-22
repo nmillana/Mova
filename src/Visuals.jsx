@@ -15,7 +15,13 @@ const characterFiles={
  tilt:'tilt.webp',
  cat:'cat.webp',
  'heel-slide':'heel-slide.webp',
- 'knee-fallout':'knee-fallout.webp'
+ 'knee-fallout':'knee-fallout.webp',
+ 'supine-march':'supine-march.webp',
+ 'dead-bug':'dead-bug.webp',
+ 'glute-bridge':'glute-bridge.webp',
+ 'step-up':'step-up.webp',
+ 'calf-raise':'calf-raise.webp',
+ 'side-plank-knees':'side-plank-knees.webp'
 };
 
 const characterLabels={
@@ -33,7 +39,13 @@ const characterLabels={
  tilt:'Inclinación pélvica suave',
  cat:'Basculación suave en cuatro apoyos',
  'heel-slide':'Deslizamiento controlado de un talón',
- 'knee-fallout':'Apertura controlada de una rodilla'
+ 'knee-fallout':'Apertura controlada de una rodilla',
+ 'supine-march':'Marcha supina con pelvis estable',
+ 'dead-bug':'Dead bug modificado moviendo una extremidad',
+ 'glute-bridge':'Puente de glúteos con elevación de pelvis',
+ 'step-up':'Subida controlada a un escalón bajo',
+ 'calf-raise':'Elevación controlada de ambos talones',
+ 'side-plank-knees':'Plancha lateral modificada con rodillas apoyadas'
 };
 
 export function ExerciseArt({type='march',animated=true,small=false,coach='sabina'}){

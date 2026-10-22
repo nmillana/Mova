@@ -11,7 +11,7 @@ Haz doble clic en **Abrir Mova.cmd**. Abre http://127.0.0.1:5178/ y usa los arch
 
 La encuesta configura objetivo, experiencia, 10/12/15 minutos, 2/3/4 días por semana, silla, movimientos a evitar, modo cuidadoso para diástasis, entrenador y narración. Elegir a Sabina muestra el avatar femenino y prioriza la voz `es-CL-CatalinaNeural`; elegir a Víctor muestra el avatar masculino y prioriza `es-CL-LorenzoNeural`. Si Edge no expone esas voces, la app elige una voz Microsoft en español y lo informa en pantalla.
 
-La biblioteca tiene 15 ejercicios y 30 GIF originales: una demostración de Sabina y otra de Víctor para cada movimiento. Incluye respiración y abdomen profundo, inclinación pélvica, gato suave, deslizamiento de talón y apertura controlada de rodilla. Las rutinas cambian según objetivo, nivel, restricciones y sesiones completadas.
+La biblioteca tiene 21 ejercicios y 42 GIF originales: una demostración de Sabina y otra de Víctor para cada movimiento. Incluye secuencias de cuatro fases para respiración 360°, deslizamiento de talón, marcha supina, dead bug modificado, puente de glúteos, bird dog, flexión en pared, sentadilla, step-up, elevación de talones y plancha lateral con rodillas. Las rutinas cambian según objetivo, nivel, restricciones y sesiones completadas.
 
 El botón **Perfil** en móvil y la tarjeta de usuario en escritorio permiten cambiar nombre, avatar, narración y voz directamente. Desde ese mismo editor se puede abrir la encuesta completa para modificar objetivo, tiempo o cuidados.
 
@@ -44,6 +44,6 @@ Revisión documental de flujos públicos, sin extracción de código propietario
 
 Los personajes 3D y sus GIF son originales y orientativos. Los GIF están en `public/animations`; los WebP estáticos en `public/characters`; los PNG fuente se conservan en `artifacts/coaches`. `scripts/build-coach-assets.py` permite regenerarlos. Los vídeos citados se usaron como referencia técnica y no se reproducen dentro de la app.
 
-Los ejercicios no sustituyen una evaluación profesional. El modo de diástasis usa activación profunda, inclinación pélvica y movimientos lentos; excluye planchas, flexiones y movimientos no marcados como compatibles. La selección automática no diagnostica ni prescribe rehabilitación. Fortalecer el abdomen profundo puede ayudar al control de la pared abdominal, pero la app no promete reducir grasa localizada.
+Los ejercicios no sustituyen una evaluación profesional. El modo de diástasis empieza con activación profunda y movimientos lentos. Dead bug, bird dog y plancha lateral modificada se reservan para el nivel activo y exigen control de la presión abdominal; los movimientos no marcados como compatibles quedan excluidos. La selección automática no diagnostica ni prescribe rehabilitación. Fortalecer el abdomen profundo puede ayudar al control de la pared abdominal, pero la app no promete reducir grasa localizada.
 
 El prototipo inicial BASE se conserva como respaldo en archive/base-v0.html.
